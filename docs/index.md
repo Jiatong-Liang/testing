@@ -2,7 +2,7 @@
 
 [`click here`](https://popsim-consortium.github.io/demes-docs/latest/introduction.html)
  
-Hey man changes were made.
+Hey man more changes were made.
 
 ## Content
 ```{toctree}
