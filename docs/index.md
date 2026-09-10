@@ -7,9 +7,9 @@ Hey man more changes were made.
 ## Content
 ```{toctree}
 :maxdepth: 4
+:caption: Examples
 
-Examples
-    Blacklegged Ticks <blacklegged_ticks>
+Blacklegged Ticks <blacklegged_ticks>
 ```
 
 ## Indices and tables
