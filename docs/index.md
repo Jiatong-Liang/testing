@@ -8,7 +8,8 @@ Hey man more changes were made.
 ```{toctree}
 :maxdepth: 4
 
-Blacklegged Ticks <blacklegged_ticks>
+Examples
+    Blacklegged Ticks <blacklegged_ticks>
 ```
 
 ## Indices and tables
