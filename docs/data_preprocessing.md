@@ -1,9 +1,63 @@
 # Data preprocessing
+DREEMS requires three mandatory inputs: a grid, sample coordinates, and a zarr array containing SNPs. We will go over the preprocessing procedure for each input.
 
-# Grid creation
-The input for DREEMS requires a user-defined grid over the geographic region. We recommend using a triangular lattice grid. If the user already has a pre-defined grid, then they can pass in a `grid` variable that stores every node coordinate as (longitude, latitude) pairs. For users that do not have an already constructured grid, here's how you can construct one. Please click on [this link](https://www.birdtheme.org/useful/v3tool.html) that will open up a map.
+## Creating a zarr array
+
+## Grid creation
+The input for DREEMS requires a user-defined grid over a geographic region. We recommend using a triangular lattice grid. If the user already has a pre-defined grid, then they can pass in a `grid` variable that stores every node coordinate as (longitude, latitude) pairs. For users that do not have an already constructured grid, here's how you can construct one. Please click on [this link](https://www.birdtheme.org/useful/v3tool.html) that will open up a map.
 
 On the map, you can scroll around and zoom in on your region of interest. For example, suppose you are interested in the region around the University of Michigan (Go Blue!). You navigate to Michigan, then click around the region of interest, and form an outer polygon around Ann Arbor. The coordinates of every point will be on the right hand side.
 
 ![google maps](./images/google_maps.png)
 
+Now you can copy the list of coordinates and ask your favorite AI tool to reformat it into an array of coordinate pairs and drop the column of 0.0.
+
+```python
+outer = [
+  [-83.747005, 42.303482],
+  [-83.767261, 42.300181],
+  [-83.784427, 42.302213],
+  [-83.800220, 42.291293],
+  [-83.802967, 42.284690],
+  [-83.787517, 42.281642],
+  [-83.787517, 42.265891],
+  [-83.782711, 42.254203],
+  [-83.768634, 42.246325],
+  [-83.745632, 42.232853],
+  [-83.716449, 42.233870],
+  [-83.695163, 42.236921],
+  [-83.681774, 42.238700],
+  [-83.676967, 42.257506],
+  [-83.670787, 42.271611],
+  [-83.673534, 42.285074],
+  [-83.677311, 42.294979],
+  [-83.685608, 42.311339],
+  [-83.687954, 42.325446],
+  [-83.718166, 42.325446],
+  [-83.743229, 42.324431],
+  [-83.747348, 42.303105]
+]
+```
+
+Now to construct the grid, you must pick a grid size. To do so, you can use the function `draw_grid` to visualize what grid size works best. This function will use the outer polygon and automatically generate a best fitting triangle lattice. The parameter `grid_size` determines the length of each triangle, If your region spans a small geographic area, then the grid size needs to be small, and vice versa. `pad` is only used for plotting purposes to determine how much you want to zoom out on the figure. 
+
+```python
+G = create_grid(outer, grid_size=0.01, pad = 0.01)
+# Here we created a grid with 147 nodes with 392 edges.
+```
+
+![Michigan sparse map](./images/michigan_grid.png)
+
+If you want a much denser grid, all you have to do is make your triangles smaller in `grid_size`.
+
+```python
+G = create_grid(outer, grid_size=0.005, pad = 0.01)
+```
+
+![Michigan dense map](./images/michigan_dense_grid.png)
+
+Once you are satisfied with the density and location of your grid. Extract the `grid` variable.
+
+```python
+grid = np.array([list(coord) for coord in nx.get_node_attributes(G, 'pos').values()])
+```
