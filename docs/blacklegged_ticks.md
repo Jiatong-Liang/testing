@@ -2,9 +2,9 @@
 
 In this example we will examine spatial SNP data for the blacklegged tick (Ixodes scapularis), to analyze population gene flow and connectivity across the Midwestern United States. For more details regarding the study please visit:
 
-Dong, D.-y., S. M. Paskewitz, J. I. Tsao, and S. D. Schoville. 2025. “ Genetic and Landscape Connectivity of Blacklegged Ticks During Range Expansion in Select States of the Midwestern USA.” Ecology and Evolution 15, no. 10: e72360. [https://doi.org/10.1002/ece3.72360.](https://onlinelibrary.wiley.com/doi/10.1002/ece3.72360))
+Dong, D.-y., S. M. Paskewitz, J. I. Tsao, and S. D. Schoville. 2025. “Genetic and Landscape Connectivity of Blacklegged Ticks During Range Expansion in Select States of the Midwestern USA.” Ecology and Evolution 15, no. 10: e72360. [https://doi.org/10.1002/ece3.72360.](https://onlinelibrary.wiley.com/doi/10.1002/ece3.72360))
 
-Please download three files listed under the name '03.pruned.vcf.gz', 'coord_03', and 'polygon_outer' using ['this link'](https://datadryad.org/dataset/doi:10.5061/dryad.c866t1gh7#readme). The files are a VCF that has pruned, linkage disequilibrium (LD)-controlled variants but has not yet been imputed for missing, a text file with sample coordinates, and a text file with coordinates of an outer polygon.
+Please download three files listed under the name '03.pruned.vcf.gz', 'coord_03', and 'polygon_outer' using [this link](https://datadryad.org/dataset/doi:10.5061/dryad.c866t1gh7#readme). The files are a VCF that has pruned, linkage disequilibrium (LD)-controlled variants but has not yet been imputed for missing, a text file with sample coordinates, and a text file with coordinates of an outer polygon.
 
 We start by opening the vcf and extracting the genotype matrix. The genotype matrix in this example is defined as the count of the minor allele. The blacklegged ticks are a diploid species, so the entries of the genotype matrix will take on values {0, 1, 2}
 
@@ -15,6 +15,7 @@ import numpy as np
 import pickle
 
 # Load the VCF file
+# You might need to update the file path to the VCF
 pysam.tabix_index("03.pruned.vcf.gz", preset="vcf")
 vcf = pysam.VariantFile("03.pruned.vcf.gz")
 
