@@ -7,6 +7,8 @@ Hey man more changes were made.
 ## Content
 ```{toctree}
 :maxdepth: 4
+Data Preprocessing <data_preprocessing>
+
 :caption: Examples
 
 Blacklegged Ticks <blacklegged_ticks>
