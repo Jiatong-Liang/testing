@@ -12,7 +12,7 @@ draw_interactive_map(surface, "./fishes.html")
 ```
 
 <iframe
-    src="./images/interactive_map.html"
+    src="./images/fishes.html"
     width="100%"
     height="700"
     style="border: 1px solid #ccc; border-radius: 6px;"
