@@ -2,63 +2,9 @@
 
 In this example we will examine spatial SNP data for the blacklegged tick (Ixodes scapularis), to analyze population gene flow and connectivity across the Midwestern United States. For more details regarding the study please visit:
 
-Dong, D.-y., S. M. Paskewitz, J. I. Tsao, and S. D. Schoville. 2025. “Genetic and Landscape Connectivity of Blacklegged Ticks During Range Expansion in Select States of the Midwestern USA.” Ecology and Evolution 15, no. 10: e72360. [https://doi.org/10.1002/ece3.72360.](https://onlinelibrary.wiley.com/doi/10.1002/ece3.72360))
+Dong, D.-y., S. M. Paskewitz, J. I. Tsao, and S. D. Schoville. 2025. “Genetic and Landscape Connectivity of Blacklegged Ticks During Range Expansion in Select States of the Midwestern USA.” Ecology and Evolution 15, no. 10: e72360. [https://doi.org/10.1002/ece3.72360.](https://onlinelibrary.wiley.com/doi/10.1002/ece3.72360)
 
-Please download three files listed under the name '03.pruned.vcf.gz', 'metadata.xlsx', and 'polygon_outer' using [this link](https://datadryad.org/dataset/doi:10.5061/dryad.c866t1gh7#readme). The files are a VCF that has pruned, linkage disequilibrium (LD)-controlled variants but has not yet been imputed for missing, a text file with sample coordinates, and a text file with coordinates of an outer polygon.
-
-We start by opening the vcf and extracting the genotype matrix. The genotype matrix in this example is defined as the count of the minor allele. The blacklegged ticks are a diploid species, so the entries of the genotype matrix will take on values {0, 1, 2}
-
-```python
-import pysam
-from sklearn.impute import SimpleImputer
-import numpy as np
-import pickle
-
-# Load the VCF file
-# You might need to update the file path to the VCF
-pysam.tabix_index("03.pruned.vcf.gz", preset="vcf")
-vcf = pysam.VariantFile("03.pruned.vcf.gz")
-
-# get genotype
-sample_names = list(vcf.header.samples)
-
-# Matrix shape: [num_snps][num_samples]
-matrix = []
-
-for record in vcf:
-    row = []
-    for sample in sample_names:
-        gt = record.samples[sample]["GT"]
-
-        if gt is None or None in gt:
-            row.append(None)  # Missing genotype (./.)
-        else:
-            row.append(gt.count(1))  # Count of 1s
-
-    matrix.append(row)
-
-# make the dimensions [num_samples, num_snps]
-tmp = np.array(matrix).T
-
-# Call rate must be > 0.8
-missing_fraction = np.mean(tmp == None, axis=0) 
-keep = missing_fraction < 0.2
-cleaned_arr = tmp[:, keep]
-
-# imputing using the mean
-imp = SimpleImputer(missing_values=np.nan, strategy="mean")
-cleaned_arr = imp.fit_transform(cleaned_arr)
-
-# MAF filtering using 0.05
-prop_ones = (clean_arr == 1).mean(axis=0)
-keep = (prop_ones >= 0.05) & (prop_ones <= 0.95)
-genotypes = clean_arr[:, keep]
-
-with open("ticks_genotype.pkl", "wb") as f:
-    pickle.dump(genotypes, f)
-```
-
-Using the previous code, we have filtered for SNPs with a call rate of greater than 0.8, imputed the missing data using the mean, and applied a MAF filtering of 0.05. These preprocessing steps are crucial for migration surface inference. 
+Please download three files listed under the name '03.pruned.vcf.gz', 'Metadata.xlsx', and 'polygon_outer' using [this link](https://datadryad.org/dataset/doi:10.5061/dryad.c866t1gh7#readme). The files are a VCF that has pruned, linkage disequilibrium (LD)-controlled variants but has not yet been imputed for missing, a text file with sample coordinates, and a text file with coordinates of an outer polygon.
 
 ## Convert a compressed VCF file into a Zarr file
 
@@ -76,25 +22,102 @@ vcf_to_zarr(vcf_gz, "./ticks.zarr")
 ```
 
 ## Load in DREEMS input
-There are three mandatory inputs to DREEMS, a Zarr file, the sample coordinates, and the grid. If you do not have a grid, please see the data preprocessing tutorial on how to construct a grid around your geographic region of interest. 
+There are three mandatory inputs to DREEMS, a Zarr file, the sample coordinates, and the grid. For sample coordinates, you need to create a dictionary mapping sample names to their coordinates. We extract the coordinates from `Metadata.xlsx`.
 
 ```python
 import xarray as xr
+import numpy as np
+import pandas as pd
 
 # load in Zarr file
 ds = xr.open_zarr("./ticks.zarr")
 outer = np.loadtxt("polygon_outer.txt") # outer polygon for constructing grid
 df = pd.read_excel("Metadata.xlsx")
 
-# you need to create a dictionary mapping sample names to their coordinates.
-# The authors of this dataset have conveniently ordered the coordinates
-# to match all sample_names
+# extract sample_coordinates from metadata
+# the sample coordinates should be (latitude, longitude) pairs
 sample_coordinates = {
     row["id"]: (row["lat"], row["long"])
     for _, row in df.iterrows()
 }
 ```
 
+## Create a grid using a given outer polygon
+User's need to provide an outer polygon or a constructed grid over their geographic region of interest. If you do not have a grid, please see the [data preprocessing tutorial](./data_preprocessing.md) on how to construct a grid around your geographic region of interest. The author's of the paper provided an outer polygon so we will use that.
+
+```python
+from dreems.utility import create_grid
+import networkx as nx
+
+G = create_grid(outer, grid_size=0.38, pad=0.1)
+
+nodes = np.array([list(coord) for coord in nx.get_node_attributes(G, 'pos').values()])
+edges = G.edges
+```
+
 ## Running DREEMS
+The function `dreems_infer` will internally filter for SNPs with a call rate of greater than 0.8, impute the missing data using the mean, and apply a MAF filtering of 0.05. These preprocessing steps are crucial for migration surface inference. 
+
+```python
+from dreems.utility import dreems_infer
+
+surface = dreems_infer(data=ds, sample_coordinates=sample_coordinates, nodes=nodes, edges=edges)
+```
 
 ## Plotting surface
+`pop_map` is an optional dictionary mapping individual samples to population labels for population-based color coding. If omitted, all sample points are rendered in a uniform color.
+
+```python
+from dreems.plotting import draw_projected_contour_map
+
+id_to_region = dict(zip(df["id"], df["region"]))
+
+prefixes_to_update = ("BARA", "JWWE", "FAYE")
+
+pop_map = {
+    sample_id: (
+        "UP-MI" if sample_id.startswith(prefixes_to_update)
+        else "LP-MI"
+    ) if region == "MI" else region
+    for sample_id, region in id_to_region.items()
+}
+
+draw_projected_contour_map(
+    surface,
+    sample_to_pop=pop_map,
+    smoothing_sigma=5,
+    contour_levels=15,
+    contour_linewidth=2.0,
+    contour_fill_alpha=0.20,
+    save_figure=True,
+    figure_path="./ticks.pdf"
+)
+```
+
+<iframe
+    src="_static/ticks.pdf"
+    width="100%"
+    height="700px"
+    style="border: none;">
+</iframe>
+
+Here's what it would look like without population-based coloring. For other ways to visualize a migration surface, please see [plotting](./plotting.md).
+
+```python
+draw_projected_contour_map(
+    surface,
+    sample_to_pop=None,
+    smoothing_sigma=5,
+    contour_levels=15,
+    contour_linewidth=2.0,
+    contour_fill_alpha=0.20,
+)
+```
+
+<iframe
+    src="_static/ticks_no_color.pdf"
+    width="100%"
+    height="700px"
+    style="border: none;">
+</iframe>
+

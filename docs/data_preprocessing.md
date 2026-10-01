@@ -1,5 +1,5 @@
 # Data preprocessing
-DREEMS requires three mandatory inputs: a grid, sample coordinates, and a zarr array containing SNPs. We will go over the preprocessing procedure for each input.
+DREEMS requires three mandatory inputs: a grid, sample coordinates, and a zarr array containing SNPs. We will go over the preprocessing procedure for each input. The vcf or plink should be LD pruned prior to running any function in DREEMS.
 
 ## Creating a zarr array
 
