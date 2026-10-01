@@ -1,4 +1,4 @@
-# Blacklegged Ticks
+# Allohistium Fishes
 
 In this example we will examine spatial SNP data for the Allohistium fishes, to analyze population gene flow and connectivity across river systems. For more details regarding the study please visit:
 

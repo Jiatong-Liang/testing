@@ -1,8 +1,8 @@
 # Visualizing Surfaces
 
-Here we present various ways to visualize a DREEMS migration surface. All you need is a `surface` object returned from `dreems_infer`. Please see the tutorials for further information.
+Here, we demonstrate several ways to visualize a DREEMS migration surface. Plotting requires only the `surface` object returned by `dreems_infer`. 
 
-We will be using the fishes data.
+We will be using the example fish dataset from the [Allohistium fishes tutorial](./fishes.md)
 
 ## Interactive maps
 Given a `surface` object, one can create an interactive map that we will save in a file called `fishes.html`.
@@ -19,10 +19,10 @@ draw_interactive_map(surface, "./fishes.html")
     loading="lazy">
 </iframe>
 
-Using this interactive map, you can scroll around and see street names, river systems, natural parks, and landscapes. Blue coloring on the grid represent higher relative effective migration and red is for lower relative effective migration. The sampled nodes are depcited with white circles and sizes are proportional to the number of samples on the node. You can also change the map by hovering your cursor over to the top right corner where you have the option for "OpenStreetMap" and "Colored terrain". The terrain option will depict the map in terms of elevation.
+This interactive map allows you to navigate and explore underlying street networks, river systems, parks, and natural landscapes. Blue grid areas represent higher relative effective migration, while red areas indicate lower relative effective migration. Sampled nodes are marked with white circles, scaled proportionally to the sample size at each location. You can customize the base map view by hovering over the layer control in the top-right corner to toggle between `OpenStreetMap` and `Colored terrain` (which highlights elevation).
 
 ## Grid maps
-One can also create a grid map on contextily maps to `fishes.pdf`. The object `pop_map` is just a dictionary that maps a sample to its population label. This parameter is completely optional and will assign colors to associated populations, the default is to plot every sample uniformly. 
+We plot the grid map using [`contextily`](https://contextily.readthedocs.io/en/latest/providers_deepdive.html) basemaps and export the output to `figure_path`. The optional pop_map parameter accepts a dictionary that maps sample identifiers to population labels, enabling population-based color coding. You can omit this parameter and all samples are plotted in a single uniform color.
 
 ```python
 draw_projected_grid_map(
@@ -41,7 +41,7 @@ draw_projected_grid_map(
 </iframe>
 
 ## Contour maps
-One can also plot contour maps to `fishes_contour.pdf`
+One can also plot contour maps and save it to `figure_path`.
 
 ```python
 draw_projected_contour_map(
