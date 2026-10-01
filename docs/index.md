@@ -8,9 +8,7 @@ Hey man more changes were made.
 ```{toctree}
 :maxdepth: 4
 Data Preprocessing <data_preprocessing>
-
-:caption: Examples
-
+Visualizing Surfaces <plotting>
 Blacklegged Ticks <blacklegged_ticks>
 ```
 

@@ -3,6 +3,7 @@ DREEMS requires three mandatory inputs: a grid, sample coordinates, and a zarr a
 
 ## Creating a zarr array
 
+
 ## Grid creation
 The input for DREEMS requires a user-defined grid over a geographic region. We recommend using a triangular lattice grid. If the user already has a pre-defined grid, then they can pass in a `grid` variable that stores every node coordinate as (longitude, latitude) pairs. For users that do not have an already constructured grid, here's how you can construct one. Please click on [this link](https://www.birdtheme.org/useful/v3tool.html) that will open up a map.
 
@@ -10,7 +11,7 @@ On the map, you can scroll around and zoom in on your region of interest. For ex
 
 ![google maps](./images/google_maps.png)
 
-Now you can copy the list of coordinates and ask your favorite AI tool to reformat it into an array of coordinate pairs and drop the column of 0.0.
+Now you can copy the list of coordinates and ask your favorite AI tool to reformat it into an array of coordinate pairs and drop the column of 0's.
 
 ```python
 outer = [
@@ -39,7 +40,7 @@ outer = [
 ]
 ```
 
-Now to construct the grid, you must pick a grid size. To do so, you can use the function `draw_grid` to visualize what grid size works best. This function will use the outer polygon and automatically generate a best fitting triangle lattice. The parameter `grid_size` determines the length of each triangle, If your region spans a small geographic area, then the grid size needs to be small, and vice versa. `pad` is only used for plotting purposes to determine how much you want to zoom out on the figure. 
+Now to construct the grid, you must pick a grid size. To do so, you can use the function `draw_grid` to visualize what grid size works best. This function will use the outer polygon and automatically generate a best fitting triangle lattice. The parameter `grid_size` determines the length of each triangle. If your region spans a small geographic area, then the grid size needs to be small, and vice versa. `pad` is only used for plotting purposes to determine how much you want to zoom out on the figure. 
 
 ```python
 G = create_grid(outer, grid_size=0.01, pad = 0.01)
@@ -52,12 +53,16 @@ If you want a much denser grid, all you have to do is make your triangles smalle
 
 ```python
 G = create_grid(outer, grid_size=0.005, pad = 0.01)
+# Here we created a grid with 478 nodes with 1346 edges.
 ```
 
 ![Michigan dense map](./images/michigan_dense_grid.png)
 
-Once you are satisfied with the density and location of your grid. Extract the `grid` variable.
+Once you are satisfied with the density and location of your grid. Extract the `grid` variable that describes the coordinates of each grid node and `edges` variable that describes how each node of the grid are connected. In general, if your have a sparsely spread out dataset, you should use a sparser grid. If you have samples well spread out across the grid, with high sample size and molecular density, then having a dense grid is appropriate. 
 
 ```python
 grid = np.array([list(coord) for coord in nx.get_node_attributes(G, 'pos').values()])
+edges = G.edges
 ```
+
+## Formatting sample coordinates

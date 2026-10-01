@@ -4,7 +4,7 @@ In this example we will examine spatial SNP data for the blacklegged tick (Ixode
 
 Dong, D.-y., S. M. Paskewitz, J. I. Tsao, and S. D. Schoville. 2025. “Genetic and Landscape Connectivity of Blacklegged Ticks During Range Expansion in Select States of the Midwestern USA.” Ecology and Evolution 15, no. 10: e72360. [https://doi.org/10.1002/ece3.72360.](https://onlinelibrary.wiley.com/doi/10.1002/ece3.72360))
 
-Please download three files listed under the name '03.pruned.vcf.gz', 'coord_03', and 'polygon_outer' using [this link](https://datadryad.org/dataset/doi:10.5061/dryad.c866t1gh7#readme). The files are a VCF that has pruned, linkage disequilibrium (LD)-controlled variants but has not yet been imputed for missing, a text file with sample coordinates, and a text file with coordinates of an outer polygon.
+Please download three files listed under the name '03.pruned.vcf.gz', 'metadata.xlsx', and 'polygon_outer' using [this link](https://datadryad.org/dataset/doi:10.5061/dryad.c866t1gh7#readme). The files are a VCF that has pruned, linkage disequilibrium (LD)-controlled variants but has not yet been imputed for missing, a text file with sample coordinates, and a text file with coordinates of an outer polygon.
 
 We start by opening the vcf and extracting the genotype matrix. The genotype matrix in this example is defined as the count of the minor allele. The blacklegged ticks are a diploid species, so the entries of the genotype matrix will take on values {0, 1, 2}
 
@@ -60,6 +60,41 @@ with open("ticks_genotype.pkl", "wb") as f:
 
 Using the previous code, we have filtered for SNPs with a call rate of greater than 0.8, imputed the missing data using the mean, and applied a MAF filtering of 0.05. These preprocessing steps are crucial for migration surface inference. 
 
+## Convert a compressed VCF file into a Zarr file
 
+```python
+import pysam
+from sgkit.io.vcf import vcf_to_zarr
 
+vcf_gz = "03.pruned.vcf.gz"
 
+# Index the bgzipped VCF file
+pysam.tabix_index(vcf_gz, preset="vcf", force=True)
+
+# Convert to zarr file
+vcf_to_zarr(vcf_gz, "./ticks.zarr")
+```
+
+## Load in DREEMS input
+There are three mandatory inputs to DREEMS, a Zarr file, the sample coordinates, and the grid. If you do not have a grid, please see the data preprocessing tutorial on how to construct a grid around your geographic region of interest. 
+
+```python
+import xarray as xr
+
+# load in Zarr file
+ds = xr.open_zarr("./ticks.zarr")
+outer = np.loadtxt("polygon_outer.txt") # outer polygon for constructing grid
+df = pd.read_excel("Metadata.xlsx")
+
+# you need to create a dictionary mapping sample names to their coordinates.
+# The authors of this dataset have conveniently ordered the coordinates
+# to match all sample_names
+sample_coordinates = {
+    row["id"]: (row["lat"], row["long"])
+    for _, row in df.iterrows()
+}
+```
+
+## Running DREEMS
+
+## Plotting surface
