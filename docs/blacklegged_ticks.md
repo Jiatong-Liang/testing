@@ -4,7 +4,7 @@ In this example we will examine spatial SNP data for the blacklegged tick (Ixode
 
 Dong, D.-y., S. M. Paskewitz, J. I. Tsao, and S. D. Schoville. 2025. “Genetic and Landscape Connectivity of Blacklegged Ticks During Range Expansion in Select States of the Midwestern USA.” Ecology and Evolution 15, no. 10: e72360. [https://doi.org/10.1002/ece3.72360.](https://onlinelibrary.wiley.com/doi/10.1002/ece3.72360)
 
-Please download three files listed under the name '03.pruned.vcf.gz', 'Metadata.xlsx', and 'polygon_outer' using [this link](https://datadryad.org/dataset/doi:10.5061/dryad.c866t1gh7#readme). The files are a VCF that has pruned, linkage disequilibrium (LD)-controlled variants but has not yet been imputed for missing, a text file with sample coordinates, and a text file with coordinates of an outer polygon.
+Please download three files listed under the name '03.pruned.vcf.gz', 'Metadata.xlsx', and 'polygon_outer' using [this link](https://datadryad.org/dataset/doi:10.5061/dryad.c866t1gh7#readme). The files are a VCF that has pruned, linkage disequilibrium (LD)-controlled variants but has not yet been imputed for missing data, a text file with sample coordinates, and a text file with coordinates of an outer polygon.
 
 ## Convert a compressed VCF file into a Zarr file
 
@@ -22,7 +22,7 @@ vcf_to_zarr(vcf_gz, "./ticks.zarr")
 ```
 
 ## Load in DREEMS input
-There are three mandatory inputs to DREEMS, a Zarr file, the sample coordinates, and the grid. For sample coordinates, you need to create a dictionary mapping sample names to their coordinates. We extract the coordinates from `Metadata.xlsx`.
+There are three mandatory inputs to DREEMS, a Zarr file, the sample coordinates, and the grid. For sample coordinates, you need to create a dictionary mapping sample names to their coordinates in (latitude, longitude) form. We extract the coordinates from `Metadata.xlsx`.
 
 ```python
 import xarray as xr
@@ -65,7 +65,7 @@ surface = dreems_infer(data=ds, sample_coordinates=sample_coordinates, nodes=nod
 ```
 
 ## Plotting surface
-`pop_map` is an optional dictionary mapping individual samples to population labels for population-based color coding. If omitted, all sample points are rendered in a uniform color.
+`pop_map` is an optional dictionary mapping individual samples to population labels for population-based color coding. If omitted, all sample points are given a uniform color.
 
 ```python
 from dreems.plotting import draw_projected_contour_map

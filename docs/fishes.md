@@ -15,13 +15,17 @@ Using the previous code, we have filtered for SNPs with a call rate of greater t
 import pysam
 from sgkit.io.vcf import vcf_to_zarr
 
-vcf_gz = "03.pruned.vcf.gz"
+vcf = "Allohistium.m95p.unlinked.vcf"
+vcf_gz = vcf_file + ".gz"
+
+# Step 1: Compress the VCF using bgzip (if not already compressed)
+pysam.tabix_compress(vcf_file, vcf_gz, force=True)
 
 # Index the bgzipped VCF file
 pysam.tabix_index(vcf_gz, preset="vcf", force=True)
 
 # Convert to zarr file
-vcf_to_zarr(vcf_gz, "./ticks.zarr")
+vcf_to_zarr(vcf_gz, "./Allo.zarr")
 ```
 
 ## Load in DREEMS input
@@ -29,21 +33,39 @@ There are three mandatory inputs to DREEMS, a Zarr file, the sample coordinates,
 
 ```python
 import xarray as xr
+import numpy
 
 # load in Zarr file
-ds = xr.open_zarr("./ticks.zarr")
-outer = np.loadtxt("polygon_outer.txt") # outer polygon for constructing grid
-df = pd.read_excel("Metadata.xlsx")
+ds = xr.open_zarr("./Allo.zarr")
+coord = np.loadtxt("Allo.coord.txt") # sample coordinates
+outer = np.loadtxt("Allo.boundary.txt") # outer polygon for constructing grid
+sample_ids = ds['sample_id'].values
 
-# you need to create a dictionary mapping sample names to their coordinates.
-# The authors of this dataset have conveniently ordered the coordinates
-# to match all sample_names
+sample_longitude = coord[:,0]
+sample_latitude = coord[:,1]
 sample_coordinates = {
-    row["id"]: (row["lat"], row["long"])
-    for _, row in df.iterrows()
+    sample_id: (latitude, longitude)
+    for sample_id, latitude, longitude in zip(
+        sample_ids,
+        sample_latitude,
+        sample_longitude,
+        strict=True,
+    )
 }
 ```
 
+## Create a grid using a given outer polygon
+User's need to provide an outer polygon or a constructed grid over their geographic region of interest. If you do not have a grid, please see the [data preprocessing tutorial](./data_preprocessing.md) on how to construct a grid around your geographic region of interest. The author's of the paper provided an outer polygon so we will use that.
+
+```python
+from dreems.utility import create_grid
+import networkx as nx
+
+G = create_grid(outer, grid_size=0.18, pad=0.1)
+
+nodes = np.array([list(coord) for coord in nx.get_node_attributes(G, 'pos').values()])
+edges = G.edges
+```
 ## Running DREEMS
 ```python
 from dreems.utility import dreems_infer
@@ -54,14 +76,31 @@ surface = dreems_infer(data=ds, sample_coordinates=sample_coordinates, nodes=nod
 ## Plotting surface
 ```python
 from dreems.plotting import draw_projected_contour_map
+
+def assign_population(sample):
+    if "BUFF" in sample or "DUCK" in sample:
+        return "Allohistium anas"
+    if sample.startswith("Amay"):
+        return "Allohistium maydeni"
+    return "Allohistium cinereum"
+
+pop_map = {sample: assign_population(sample) for sample in sample_ids}
+    
 draw_projected_contour_map(
     surface,
     sample_to_pop=pop_map,
-    smoothing_sigma=5,
+    smoothing_km=10.0,
     contour_levels=15,
     contour_linewidth=2.0,
     contour_fill_alpha=0.20,
     save_figure=True,
-    figure_path="./dreems_ticks_dense_relative_migration_map.pdf"
+    figure_path="./fishes_contour.pdf"
 )
 ```
+
+<iframe
+    src="_static/fishes_contour.pdf"
+    width="100%"
+    height="700px"
+    style="border: none;">
+</iframe>
