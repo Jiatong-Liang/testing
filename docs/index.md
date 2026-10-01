@@ -10,6 +10,7 @@ Hey man more changes were made.
 Data Preprocessing <data_preprocessing>
 Visualizing Surfaces <plotting>
 Blacklegged Ticks <blacklegged_ticks>
+Allohistium Fishes <fishes>
 ```
 
 ## Indices and tables
