@@ -1,8 +1,40 @@
 # Data preprocessing
-DREEMS requires three mandatory inputs: a grid, sample coordinates, and a zarr array containing SNPs. We will go over the preprocessing procedure for each input. The vcf or plink should be LD pruned prior to running any function in DREEMS.
+DREEMS requires three mandatory inputs: a grid, sample coordinates, and a zarr array containing LD-pruned SNPs. This tutorial will go over the preprocessing procedure for each input. The data should be LD pruned prior to converting to a zarr array.
 
-## Creating a zarr array
+## Creating a zarr array from VCF
+If you already have a compressed VCF file, you may skip the function `pysam.tabix_compress`.
 
+```python
+import pysam
+from sgkit.io.vcf import vcf_to_zarr
+
+vcf = "example.vcf"
+vcf_gz = vcf_file + ".gz"
+
+# Step 1: Compress the VCF using bgzip (if not already compressed)
+pysam.tabix_compress(vcf_file, vcf_gz, force=True)
+
+# Index the bgzipped VCF file
+pysam.tabix_index(vcf_gz, preset="vcf", force=True)
+
+# Convert to zarr file
+vcf_to_zarr(vcf_gz, "./Allo.zarr")
+```
+
+## Creating a zarr array from PLINK
+```python
+from bio2zarr import plink2zarr
+
+# Path to your PLINK prefix (expects prefix.bed, prefix.bim, prefix.fam)
+plink_prefix = "path/to/my_data"
+output_zarr = "path/to/output.zarr"
+
+# Convert PLINK to VCF-spec Zarr
+plink2zarr(
+    input_prefix=plink_prefix,
+    output_path=output_zarr
+)
+```
 
 ## Grid creation
 The input for DREEMS requires a user-defined grid over a geographic region. We recommend using a triangular lattice grid. If the user already has a pre-defined grid, then they can pass in a `grid` variable that stores every node coordinate as (longitude, latitude) pairs. For users that do not have an already constructured grid, here's how you can construct one. Please click on [this link](https://www.birdtheme.org/useful/v3tool.html) that will open up a map.
@@ -66,3 +98,12 @@ edges = G.edges
 ```
 
 ## Formatting sample coordinates
+Sample coordinates must be provided as a dictionary that maps sample identifiers to (latitude, longitude). Note that these sample identifiers MUST match those used in the input Zarr file.
+
+An example of a valid `sample_coordinates` object:
+```python
+{'sample_1': (np.float64(35.46333), np.float64(-87.53528)),
+ 'sample_2': (np.float64(35.597185), np.float64(-86.893962)),
+ 'sample_3': (np.float64(35.8188), np.float64(-83.9299)),
+}
+```
