@@ -4,7 +4,6 @@ DREEMS - Deep Recovery of Estimated Effective Migration Surfaces - is a Python p
 ## Content
 ```{toctree}
 :maxdepth: 1
-Home Page <index>
 Data Preprocessing <data_preprocessing>
 Visualizing Surfaces <plotting>
 Blacklegged Ticks <blacklegged_ticks>

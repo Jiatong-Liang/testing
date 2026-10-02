@@ -90,7 +90,7 @@ G = create_grid(outer, grid_size=0.005, pad = 0.01)
 
 ![Michigan dense map](./images/michigan_dense_grid.png)
 
-Once you are satisfied with the density and location of your grid. Extract the `grid` variable that describes the coordinates of each grid node and `edges` variable that describes how each node of the grid are connected. In general, if your have a sparsely spread out dataset, you should use a sparser grid. If you have samples well spread out across the grid, with high sample size and molecular density, then having a dense grid is appropriate. 
+Once you are satisfied with the density and location of your grid. Extract the `grid` variable that describes the coordinates of each grid node and `edges` variable that describes how each node of the grid are connected. In general, if your have a sparsely spread out dataset, you should use a sparser grid. If you have samples well spread out across the grid, with high sample size and molecular density, then having a dense grid is appropriate. The `grid` and `edges` variable will be necessary inputs to DREEMS.
 
 ```python
 grid = np.array([list(coord) for coord in nx.get_node_attributes(G, 'pos').values()])
@@ -102,7 +102,7 @@ Sample coordinates must be provided as a dictionary that maps sample identifiers
 
 An example of a valid `sample_coordinates` object:
 ```python
-{'sample_1': (np.float64(35.46333), np.float64(-87.53528)),
+sample_coordinates = {'sample_1': (np.float64(35.46333), np.float64(-87.53528)),
  'sample_2': (np.float64(35.597185), np.float64(-86.893962)),
  'sample_3': (np.float64(35.8188), np.float64(-83.9299)),
 }
