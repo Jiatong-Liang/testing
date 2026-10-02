@@ -18,7 +18,7 @@ pysam.tabix_compress(vcf_file, vcf_gz, force=True)
 pysam.tabix_index(vcf_gz, preset="vcf", force=True)
 
 # Convert to zarr file
-vcf_to_zarr(vcf_gz, "./Allo.zarr")
+vcf_to_zarr(vcf_gz, "./example.zarr")
 ```
 
 ## Creating a zarr array from PLINK
