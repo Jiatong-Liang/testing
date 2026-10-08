@@ -67,7 +67,7 @@ draw_projected_contour_map(
 
 ## Posterior SD plots
 
-In addition to providing point estimates of migration rates, we also have posterior SD (standard deviation) plots that quantify the uncertainty associated with these predictions. You can use any of the above plotting functions and simply change `posterior=True`. As one would expect, there's greater uncertainty in unsampled regions as shown below:
+In addition to providing point estimates of migration rates, we also have posterior SD (standard deviation) plots that quantify the uncertainty associated with these predictions. You can use the two grid and contour map functions above and simply change `posterior=True`. As one would expect, there's greater uncertainty in unsampled regions as shown below:
 
 ```python
 draw_projected_contour_map(

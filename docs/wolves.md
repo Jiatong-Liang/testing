@@ -56,8 +56,6 @@ fig, ax = draw_projected_contour_map(
 ## Posterior SD surface
 
 ```python
-from dreems.plotting import draw_projected_contour_map
-
 fig, ax = draw_projected_contour_map(
     surface,
     sample_to_pop=None,

@@ -1,5 +1,5 @@
 # Data preprocessing
-DREEMS requires three mandatory inputs: a grid, sample coordinates, and a zarr array containing LD-pruned SNPs. This tutorial will go over the preprocessing procedure for each input. The data should be LD pruned prior to converting to a zarr array. If you are more familiar with `FEEMS`, DREEMS can also accept genotype matrix inputs, please see [`Taking FEEMS Inputs tutorial`](./wolves.md).
+DREEMS requires three mandatory inputs: a grid, sample coordinates, and a zarr array containing LD-pruned SNPs. This tutorial will go over the preprocessing procedure and format for each input. The data should be LD pruned prior to converting to a zarr array. If you are more familiar with `FEEMS`, DREEMS can also accept genotype matrix inputs, please see [`Taking FEEMS Inputs tutorial`](./wolves.md).
 
 ## Creating a zarr array from VCF
 If you already have a compressed VCF file, you may skip the function `pysam.tabix_compress`.
@@ -8,7 +8,7 @@ If you already have a compressed VCF file, you may skip the function `pysam.tabi
 import pysam
 from sgkit.io.vcf import vcf_to_zarr
 
-vcf = "example.vcf"
+vcf_file = "example.vcf"
 vcf_gz = vcf_file + ".gz"
 
 # Step 1: Compress the VCF using bgzip (if not already compressed)
@@ -72,7 +72,7 @@ outer = [
 ]
 ```
 
-Now to construct the grid, you must pick a grid size. To do so, you can use the function `draw_grid` to visualize what grid size works best. This function will use the outer polygon and automatically generate a best fitting triangle lattice. The parameter `grid_size` determines the length of each triangle. If your region spans a small geographic area, then the grid size needs to be small, and vice versa. `pad` is only used for plotting purposes to determine how much you want to zoom out on the figure. 
+Now to construct the grid, you must pick a grid size. To do so, you can use the function `draw_grid` to visualize what grid size works best. This function will use the outer polygon and automatically generate a best fitting triangle lattice. The parameter `grid_size` determines the length of each equilateral triangle. If your region spans a small geographic area, then the grid size needs to be small, and vice versa. `pad` is only used for plotting purposes to determine how much you want to zoom out on the figure. 
 
 ```python
 G = create_grid(outer, grid_size=0.01, pad = 0.01)
@@ -106,4 +106,13 @@ sample_coordinates = {'sample_1': (np.float64(-87.53528), np.float64(35.46333)),
  'sample_2': (np.float64(-86.893962), np.float64(35.597185)),
  'sample_3': (np.float64(-83.9299), np.float64(35.8188)),
 }
+```
+
+## Inference
+Now that you have all the necessary inputs, the inference procedure is simply one function. Once you obtain a migration surface, you can visualize it by looking at the [Visualizing Surface tutorial](./plotting.md).
+
+```python
+from dreems.utility import dreems_infer
+
+surface = dreems_infer(data=ds, sample_coordinates=sample_coordinates, nodes=nodes, edges=edges)
 ```

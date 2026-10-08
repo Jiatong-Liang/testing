@@ -105,7 +105,7 @@ draw_projected_contour_map(
     style="border: none;">
 </iframe>
 
-Here's what it would look like without population-based coloring. For other ways to visualize a migration surface, please see [plotting](./plotting.md).
+Here's what it would look like without population-based coloring. For other ways to visualize a migration surface, please see [Visualizing Surfaces](./plotting.md).
 
 ```python
 draw_projected_contour_map(

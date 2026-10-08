@@ -1,6 +1,12 @@
 # Welcome to DREEMS' documentation
 DREEMS - Deep Recovery of Estimated Effective Migration Surfaces - is a Python package for computing and visualizing relative effective migration surfaces. 
 
+The entire inference procedure of DREEMS is one line of code. To understand the necessary inputs and how to visualize migration surfaces, pleasee see the tutorials. 
+
+```python
+surface = dreems_infer(data=ds, sample_coordinates=sample_coordinates, nodes=nodes, edges=edges)
+```
+
 ## Content
 ```{toctree}
 :maxdepth: 1
