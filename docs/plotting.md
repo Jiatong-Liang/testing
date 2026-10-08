@@ -120,7 +120,7 @@ fig, ax = draw_projected_contour_map(
 ```
 
 <iframe
-    src="_static/map_example.pdf"
+    src="_static/map_example1.pdf"
     width="100%"
     height="700px"
     style="border: none;">
