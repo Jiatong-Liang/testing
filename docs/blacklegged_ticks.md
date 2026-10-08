@@ -6,6 +6,8 @@ Dong, D.-y., S. M. Paskewitz, J. I. Tsao, and S. D. Schoville. 2025. “Genetic 
 
 Please download three files listed under the name '03.pruned.vcf.gz', 'Metadata.xlsx', and 'polygon_outer' using [this link](https://datadryad.org/dataset/doi:10.5061/dryad.c866t1gh7#readme). The files are a VCF that has pruned, linkage disequilibrium (LD)-controlled variants but has not yet been imputed for missing data, a text file with sample coordinates, and a text file with coordinates of an outer polygon.
 
+Users must ensure that the vcf is LD-pruned, but you can leave missing data as is. DREEMS will automatically impute missing data using the mean. 
+
 ## Convert a compressed VCF file into a Zarr file
 
 ```python
@@ -63,6 +65,8 @@ from dreems.utility import dreems_infer
 
 surface = dreems_infer(data=ds, sample_coordinates=sample_coordinates, nodes=nodes, edges=edges)
 ```
+
+By default, DREEMS will filter for SNPs with a call rate of greater than 0.8, impute the missing data using the mean, and apply a MAF filtering of 0.05. These preprocessing steps are crucial for migration surface inference. 
 
 ## Plotting surface
 `pop_map` is an optional dictionary mapping individual samples to population labels for population-based color coding. If omitted, all sample points are given a uniform color.

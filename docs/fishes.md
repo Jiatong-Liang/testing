@@ -6,8 +6,7 @@ Daniel J MacGuigan, Adam Taylor, Ava Ghezelayagh, Julia E Wood, Jeffrey W Simmon
 
 Please download files listed under the name 'VCFs.tar' and 'FEEMS.tar' using [this link](https://datadryad.org/dataset/doi:10.5061/dryad.r4xgxd2q4#readme). We will be using the files 'Allo.coord.txt', 'Allo.boundary.txt', and 'Allohistium.m95p.unlinked.vcf'. The files are a VCF that has pruned, linkage disequilibrium (LD)-controlled variants, a text file with sample coordinates, and a text file with coordinates of an outer polygon.
 
-
-Using the previous code, we have filtered for SNPs with a call rate of greater than 0.8, imputed the missing data using the mean, and applied a MAF filtering of 0.05. These preprocessing steps are crucial for migration surface inference. 
+Users must ensure that the vcf is LD-pruned, but you can leave missing data as is. DREEMS will automatically impute missing data using the mean. 
 
 ## Convert a compressed VCF file into a Zarr file
 
@@ -72,6 +71,8 @@ from dreems.utility import dreems_infer
 
 surface = dreems_infer(data=ds, sample_coordinates=sample_coordinates, nodes=nodes, edges=edges)
 ```
+
+By default, DREEMS will filter for SNPs with a call rate of greater than 0.8, impute the missing data using the mean, and apply a MAF filtering of 0.05. These preprocessing steps are crucial for migration surface inference. 
 
 ## Plotting surface
 ```python
