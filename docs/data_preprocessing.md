@@ -1,5 +1,5 @@
 # Data preprocessing
-DREEMS requires three mandatory inputs: a grid, sample coordinates, and a zarr array containing LD-pruned SNPs. This tutorial will go over the preprocessing procedure for each input. The data should be LD pruned prior to converting to a zarr array.
+DREEMS requires three mandatory inputs: a grid, sample coordinates, and a zarr array containing LD-pruned SNPs. This tutorial will go over the preprocessing procedure for each input. The data should be LD pruned prior to converting to a zarr array. If you are more familiar with `FEEMS`, DREEMS can also accept genotype matrix inputs, please see [`Taking FEEMS Inputs tutorial`](./wolves.md).
 
 ## Creating a zarr array from VCF
 If you already have a compressed VCF file, you may skip the function `pysam.tabix_compress`.

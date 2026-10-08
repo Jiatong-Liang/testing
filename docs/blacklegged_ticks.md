@@ -39,7 +39,7 @@ df = pd.read_excel("Metadata.xlsx")
 # extract sample_coordinates from metadata
 # the sample coordinates should be (latitude, longitude) pairs
 sample_coordinates = {
-    row["id"]: (row["lat"], row["long"])
+    row["id"]: (row["long"], row["lat"])
     for _, row in df.iterrows()
 }
 ```

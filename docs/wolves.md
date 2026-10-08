@@ -52,3 +52,28 @@ fig, ax = draw_projected_contour_map(
     height="700px"
     style="border: none;">
 </iframe>
+
+## Posterior SD surface
+
+```python
+from dreems.plotting import draw_projected_contour_map
+
+fig, ax = draw_projected_contour_map(
+    surface,
+    sample_to_pop=None,
+    smoothing_km=5,
+    contour_levels=15,
+    contour_linewidth=2.0,
+    contour_fill_alpha=0.20,
+    save_figure=True,
+    figure_path="./wolves_posterior.pdf",
+    posterior=True
+)
+```
+
+<iframe
+    src="_static/wolves_posterior.pdf"
+    width="100%"
+    height="700px"
+    style="border: none;">
+</iframe>
