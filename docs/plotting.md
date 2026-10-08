@@ -91,4 +91,37 @@ draw_projected_contour_map(
     style="border: none;">
 </iframe>
 
+## Different contextily maps
 
+Users can provide different `basemap_source` into the grid and contour mapping functions to change the underlying map. To see all existing map options run the following:
+
+```python
+import contextily as cx
+cx.providers
+```
+
+Here is an example of changing the basemap.
+
+```python
+from dreems.plotting import draw_projected_contour_map
+
+fig, ax = draw_projected_contour_map(
+    surface,
+    sample_to_pop=None,
+    smoothing_km=5,
+    contour_levels=15,
+    contour_linewidth=2.0,
+    contour_fill_alpha=0.20,
+    save_figure=True,
+    figure_path="./map_example.pdf",
+    posterior=False,
+    basemap_source = cx.providers.OpenTopoMap
+)
+```
+
+<iframe
+    src="_static/map_example.pdf"
+    width="100%"
+    height="700px"
+    style="border: none;">
+</iframe>
