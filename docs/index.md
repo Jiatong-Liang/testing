@@ -8,7 +8,7 @@ Data Preprocessing <data_preprocessing>
 Visualizing Surfaces <plotting>
 Blacklegged Ticks <blacklegged_ticks>
 Allohistium Fishes <fishes>
-Taking FEEMS Inputs <wolves>
+Using FEEMS Inputs <wolves>
 ```
 
 ## Indices and tables

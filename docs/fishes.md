@@ -43,7 +43,7 @@ sample_ids = ds['sample_id'].values
 sample_longitude = coord[:,0]
 sample_latitude = coord[:,1]
 sample_coordinates = {
-    sample_id: (latitude, longitude)
+    sample_id: (longitude, latitude)
     for sample_id, latitude, longitude in zip(
         sample_ids,
         sample_latitude,
